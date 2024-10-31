@@ -1,18 +1,22 @@
 package com.example.collegecreditunion.model;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @Entity
+@XmlRootElement
 public class Loan {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String description;
 	private Double loanAmount;
+
 	@ManyToOne
 	@JoinColumn(name = "student_id", nullable = false)
 	private Student student;
+
 	@OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Repayment> repayments;
 

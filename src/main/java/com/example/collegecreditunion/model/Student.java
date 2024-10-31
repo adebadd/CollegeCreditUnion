@@ -1,9 +1,13 @@
 package com.example.collegecreditunion.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@XmlRootElement
 public class Student {
 
    @Id
@@ -15,7 +19,8 @@ public class Student {
    private String address;
    private String programmeCode;
 
-   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+   @XmlElement(name = "loan")
    private List<Loan> loans;
 
    public Student() {}
@@ -68,6 +73,7 @@ public class Student {
       this.programmeCode = programmeCode;
    }
 
+   @XmlTransient
    public List<Loan> getLoans() {
       return loans;
    }
