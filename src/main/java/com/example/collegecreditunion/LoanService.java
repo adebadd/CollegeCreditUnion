@@ -1,5 +1,6 @@
 package com.example.collegecreditunion;
 
+import com.example.collegecreditunion.model.Loan;
 import com.example.collegecreditunion.model.Student;
 
 import javax.ws.rs.*;
@@ -9,78 +10,76 @@ import javax.persistence.EntityTransaction;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/students")
-public class StudentService {
+@Path("/loans")
+public class LoanService {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Student> getAllStudents() {
+    public List<Loan> getAllLoans() {
         EntityManager em = CollegeEntityManager.getEntityManager();
-        List<Student> students = em.createQuery("SELECT s FROM Student s", Student.class).getResultList();
+        List<Loan> loans = em.createQuery("SELECT l FROM Loan l", Loan.class).getResultList();
         em.close();
-        return students;
+        return loans;
     }
 
     @GET
     @Path("/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Student> getAllStudentsJson() {
-        return getAllStudents();
+    public List<Loan> getAllLoansJson() {
+        return getAllLoans();
     }
 
     @GET
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Student getStudentById(@PathParam("id") Long id) {
+    public Loan getLoanById(@PathParam("id") Long id) {
         EntityManager em = CollegeEntityManager.getEntityManager();
-        Student student = em.find(Student.class, id);
+        Loan loan = em.find(Loan.class, id);
         em.close();
-        return student;
+        return loan;
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response createStudent(Student student) {
+    public Response createLoan(@QueryParam("studentId") Long studentId, Loan loan) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
+        Student student = em.find(Student.class, studentId);
+
+        loan.setStudent(student);
         transaction.begin();
-        em.persist(student);
+        em.persist(loan);
         transaction.commit();
         em.close();
-        return Response.status(Response.Status.CREATED).entity(student).build();
+        return Response.status(Response.Status.CREATED).entity(loan).build();
     }
 
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateStudent(@PathParam("id") Long id, Student updatedStudent) {
+    public Response updateLoan(@PathParam("id") Long id, Loan updatedLoan) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
-        Student student = em.find(Student.class, id);
+        Loan loan = em.find(Loan.class, id);
 
         transaction.begin();
-        student.setName(updatedStudent.getName());
-        student.setStudentNumber(updatedStudent.getStudentNumber());
-        student.setPhoneNumber(updatedStudent.getPhoneNumber());
-        student.setAddress(updatedStudent.getAddress());
-        student.setProgrammeCode(updatedStudent.getProgrammeCode());
+        loan.setDescription(updatedLoan.getDescription());
+        loan.setLoanAmount(updatedLoan.getLoanAmount());
         transaction.commit();
-
         em.close();
-        return Response.ok(student).build();
+        return Response.ok(loan).build();
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteStudent(@PathParam("id") Long id) {
+    public Response deleteLoan(@PathParam("id") Long id) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
-        Student student = em.find(Student.class, id);
+        Loan loan = em.find(Loan.class, id);
 
         transaction.begin();
-        em.remove(student);
+        em.remove(loan);
         transaction.commit();
-
         em.close();
         return Response.status(Response.Status.NO_CONTENT).build();
     }

@@ -3,6 +3,7 @@ package com.example.collegecreditunion.model;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @XmlRootElement
@@ -17,7 +18,7 @@ public class Loan {
 	@JoinColumn(name = "student_id", nullable = false)
 	private Student student;
 
-	@OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "loan", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Repayment> repayments;
 
 	public Loan() {
@@ -47,6 +48,7 @@ public class Loan {
 		this.loanAmount = loanAmount;
 	}
 
+	@XmlTransient
 	public Student getStudent() {
 		return student;
 	}
@@ -55,6 +57,7 @@ public class Loan {
 		this.student = student;
 	}
 
+	@XmlTransient
 	public List<Repayment> getRepayments() {
 		return repayments;
 	}

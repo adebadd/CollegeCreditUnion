@@ -7,11 +7,9 @@
     
     <display-name>College Credit Union</display-name>
 
-
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
-
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>
@@ -30,6 +28,10 @@
 
     <context-param>
         <param-name>resteasy.resources</param-name>
-        <param-value>com.example.collegecreditunion.StudentService</param-value>
+        <param-value>
+            com.example.collegecreditunion.StudentService,
+            com.example.collegecreditunion.LoanService,
+            com.example.collegecreditunion.RepaymentService
+        </param-value>
     </context-param>
 </web-app>

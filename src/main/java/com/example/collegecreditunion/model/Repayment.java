@@ -1,8 +1,11 @@
 package com.example.collegecreditunion.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.persistence.*;
 
 @Entity
+@XmlRootElement
 public class Repayment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,6 +14,7 @@ public class Repayment {
 	private Double amount;
 	@ManyToOne
 	@JoinColumn(name = "loan_id", nullable = false)
+	@XmlTransient
 	private Loan loan;
 
 	public Repayment() {
