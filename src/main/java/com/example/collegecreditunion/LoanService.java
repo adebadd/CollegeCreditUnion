@@ -45,7 +45,20 @@ public class LoanService {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Student student = em.find(Student.class, studentId);
-
+        
+        if (student == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Student not found.")
+                    .build();
+        }
+        Long existingLoanCount = em.createQuery("SELECT COUNT(l) FROM Loan l WHERE l.student.id = :studentId", Long.class)
+                .setParameter("studentId", studentId)
+                .getSingleResult();
+        if (existingLoanCount > 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("You already have a loan, you can only take 1 out at a time.")
+                    .build();
+        }
         loan.setStudent(student);
         transaction.begin();
         em.persist(loan);
