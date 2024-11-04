@@ -44,13 +44,29 @@ public class RepaymentService {
     public Response createRepayment(@QueryParam("loanId") Long loanId, Repayment repayment) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
-        Loan loan = em.find(Loan.class, loanId);
 
+        Loan loan = em.find(Loan.class, loanId);
+        if (loan == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Loan doesnt exist")
+                    .build();
+        }
+        Double totalRepaid = em.createQuery("SELECT COALESCE(SUM(r.amount), 0) FROM Repayment r WHERE r.loan.id = :loanId", Double.class)
+                .setParameter("loanId", loanId)
+                .getSingleResult();
+
+        double remainingBalance = loan.getLoanAmount() - totalRepaid;
+        if (repayment.getAmount() > remainingBalance) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Repayment amount exceeds the loan balance " + remainingBalance)
+                    .build();
+        }
         repayment.setLoan(loan);
         transaction.begin();
         em.persist(repayment);
         transaction.commit();
         em.close();
+        
         return Response.status(Response.Status.CREATED).entity(repayment).build();
     }
 
