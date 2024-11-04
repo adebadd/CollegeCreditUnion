@@ -1,24 +1,22 @@
 package com.example.collegecreditunion;
 
+import com.example.collegecreditunion.dao.StudentDAO;
 import com.example.collegecreditunion.model.Student;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/students")
 public class StudentService {
 
+    private StudentDAO studentDAO = new StudentDAO();
+
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Student> getAllStudents() {
-        EntityManager em = CollegeEntityManager.getEntityManager();
-        List<Student> students = em.createQuery("SELECT s FROM Student s", Student.class).getResultList();
-        em.close();
-        return students;
+        return studentDAO.getAllStudents();
     }
 
     @GET
@@ -32,56 +30,29 @@ public class StudentService {
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Student getStudentById(@PathParam("id") Long id) {
-        EntityManager em = CollegeEntityManager.getEntityManager();
-        Student student = em.find(Student.class, id);
-        em.close();
-        return student;
+        return studentDAO.getStudentById(id);
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response createStudent(Student student) {
-        EntityManager em = CollegeEntityManager.getEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        em.persist(student);
-        transaction.commit();
-        em.close();
-        return Response.status(Response.Status.CREATED).entity(student).build();
+    public String createStudent(Student student) {
+        studentDAO.persist(student);
+        return "Student added " + student.getName();
     }
 
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateStudent(@PathParam("id") Long id, Student updatedStudent) {
-        EntityManager em = CollegeEntityManager.getEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        Student student = em.find(Student.class, id);
-
-        transaction.begin();
-        student.setName(updatedStudent.getName());
-        student.setStudentNumber(updatedStudent.getStudentNumber());
-        student.setPhoneNumber(updatedStudent.getPhoneNumber());
-        student.setAddress(updatedStudent.getAddress());
-        student.setProgrammeCode(updatedStudent.getProgrammeCode());
-        transaction.commit();
-
-        em.close();
-        return Response.ok(student).build();
+    public Student updateStudent(@PathParam("id") Long id, Student updatedStudent) {
+        updatedStudent.setId(id);
+        return studentDAO.merge(updatedStudent);
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteStudent(@PathParam("id") Long id) {
-        EntityManager em = CollegeEntityManager.getEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        Student student = em.find(Student.class, id);
-
-        transaction.begin();
-        em.remove(student);
-        transaction.commit();
-
-        em.close();
-        return Response.status(Response.Status.NO_CONTENT).build();
+    public String deleteStudent(@PathParam("id") Long id) {
+        Student student = studentDAO.getStudentById(id);
+        studentDAO.removeStudent(student);
+        return "Student " + student.getName() + " deleted";
     }
 }
