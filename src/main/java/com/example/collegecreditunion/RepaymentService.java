@@ -73,7 +73,7 @@ public class RepaymentService {
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateRepayment(@PathParam("id") Long id, Repayment updatedRepayment) {
+    public String updateRepayment(@PathParam("id") Long id, Repayment updatedRepayment) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Repayment repayment = em.find(Repayment.class, id);
@@ -83,12 +83,12 @@ public class RepaymentService {
         repayment.setAmount(updatedRepayment.getAmount());
         transaction.commit();
         em.close();
-        return Response.ok(repayment).build();
+        return "Repayment " + repayment.getId() + "updated";
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteRepayment(@PathParam("id") Long id) {
+    public String deleteRepayment(@PathParam("id") Long id) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Repayment repayment = em.find(Repayment.class, id);
@@ -97,6 +97,6 @@ public class RepaymentService {
         em.remove(repayment);
         transaction.commit();
         em.close();
-        return Response.status(Response.Status.NO_CONTENT).build();
+        return "Repayment " + repayment.getId() + "deleted";
     }
 }

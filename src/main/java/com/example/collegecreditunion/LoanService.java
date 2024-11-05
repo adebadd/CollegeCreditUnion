@@ -70,7 +70,7 @@ public class LoanService {
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateLoan(@PathParam("id") Long id, Loan updatedLoan) {
+    public String updateLoan(@PathParam("id") Long id, Loan updatedLoan) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Loan loan = em.find(Loan.class, id);
@@ -80,12 +80,12 @@ public class LoanService {
         loan.setLoanAmount(updatedLoan.getLoanAmount());
         transaction.commit();
         em.close();
-        return Response.ok(loan).build();
+        return "Loan " + loan.getId() + "updated";
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteLoan(@PathParam("id") Long id) {
+    public String deleteLoan(@PathParam("id") Long id) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Loan loan = em.find(Loan.class, id);
@@ -94,6 +94,6 @@ public class LoanService {
         em.remove(loan);
         transaction.commit();
         em.close();
-        return Response.status(Response.Status.NO_CONTENT).build();
+        return "Loan " + loan.getId() + "deleted";
     }
 }

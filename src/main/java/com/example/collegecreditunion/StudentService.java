@@ -40,20 +40,20 @@ public class StudentService {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response createStudent(Student student) {
+    public String createStudent(Student student) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         em.persist(student);
         transaction.commit();
         em.close();
-        return Response.status(Response.Status.CREATED).entity(student).build();
+        return "Student " + student.getName() + " created";
     }
 
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateStudent(@PathParam("id") Long id, Student updatedStudent) {
+    public String updateStudent(@PathParam("id") Long id, Student updatedStudent) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Student student = em.find(Student.class, id);
@@ -67,12 +67,12 @@ public class StudentService {
         transaction.commit();
 
         em.close();
-        return Response.ok(student).build();
+        return "Student " + student.getName() + " updated";
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteStudent(@PathParam("id") Long id) {
+    public String deleteStudent(@PathParam("id") Long id) {
         EntityManager em = CollegeEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
         Student student = em.find(Student.class, id);
@@ -82,6 +82,6 @@ public class StudentService {
         transaction.commit();
 
         em.close();
-        return Response.status(Response.Status.NO_CONTENT).build();
+        return "Student " + student.getName() + " deleted";
     }
 }
